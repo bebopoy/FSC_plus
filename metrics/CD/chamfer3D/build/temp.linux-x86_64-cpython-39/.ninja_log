@@ -1,0 +1,3 @@
+# ninja log v5
+1	20843	1713775971813635038	/home/vipuser/SVDFormer_PointSea/metrics/CD/chamfer3D/build/temp.linux-x86_64-cpython-39/home/vipuser/SVDFormer_PointSea/metrics/CD/chamfer3D/chamfer_cuda.o	a0bff90d421940c7
+0	22455	1713775973425609838	/home/vipuser/SVDFormer_PointSea/metrics/CD/chamfer3D/build/temp.linux-x86_64-cpython-39/home/vipuser/SVDFormer_PointSea/metrics/CD/chamfer3D/chamfer3D.o	171d3d948e735d3e
