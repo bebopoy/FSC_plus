@@ -15,10 +15,36 @@ from utils.schedular import GradualWarmupScheduler
 from utils.loss_utils import *
 from models.model_utils import PCViews
 # from models.SVDFormer import Model
-from models.FSCSVD import Model
+# from models.FSCSVD import Model
+from models.FFSC import Model
+import wandb # log print
+
+def setup_logging(log_file_path):
+    logging.basicConfig(level=logging.INFO,
+                        format='%(asctime)s - %(levelname)s - %(message)s',
+                        handlers=[
+                            logging.FileHandler(log_file_path),
+                            logging.StreamHandler()
+                        ])
 
 def train_net(cfg):
     torch.backends.cudnn.benchmark = True
+
+    # Initialize wandb
+    wandb.init(project="FSC", config=cfg)
+    wandb.watch_called = False  # Re-run the model without restarting the runtime, unnecessary after the first run
+
+    # Set up folders for logs and checkpoints
+    output_dir = os.path.join(cfg.DIR.OUT_PATH, '%s', datetime.now().isoformat())
+    cfg.DIR.CHECKPOINTS = output_dir % 'checkpoints'
+    cfg.DIR.LOGS = output_dir % 'logs'
+    if not os.path.exists(cfg.DIR.CHECKPOINTS):
+        os.makedirs(cfg.DIR.CHECKPOINTS)
+    if not os.path.exists(cfg.DIR.LOGS):
+        os.makedirs(cfg.DIR.LOGS)
+
+    log_file_path = os.path.join(cfg.DIR.LOGS, 'training.log')
+    setup_logging(log_file_path)
 
     train_dataset_loader = utils.data_loaders.DATASET_LOADER_MAPPING[cfg.DATASET.TRAIN_DATASET](cfg)
     test_dataset_loader = utils.data_loaders.DATASET_LOADER_MAPPING[cfg.DATASET.TEST_DATASET](cfg)
@@ -37,21 +63,45 @@ def train_net(cfg):
                                                   collate_fn=utils.data_loaders.collate_fn,
                                                   pin_memory=True,
                                                   shuffle=False)
+    
 
-    # Set up folders for logs and checkpoints
-    output_dir = os.path.join(cfg.DIR.OUT_PATH, '%s', datetime.now().isoformat())
-    cfg.DIR.CHECKPOINTS = output_dir % 'checkpoints'
-    cfg.DIR.LOGS = output_dir % 'logs'
-    if not os.path.exists(cfg.DIR.CHECKPOINTS):
-        os.makedirs(cfg.DIR.CHECKPOINTS)
+
+    # # Set up folders for logs and checkpoints
+    # output_dir = os.path.join(cfg.DIR.OUT_PATH, '%s', datetime.now().isoformat())
+    # cfg.DIR.CHECKPOINTS = output_dir % 'checkpoints'
+    # cfg.DIR.LOGS = output_dir % 'logs'
+    # if not os.path.exists(cfg.DIR.CHECKPOINTS):
+    #     os.makedirs(cfg.DIR.CHECKPOINTS)
 
     # Create tensorboard writers
     train_writer = SummaryWriter(os.path.join(cfg.DIR.LOGS, 'train'))
     val_writer = SummaryWriter(os.path.join(cfg.DIR.LOGS, 'test'))
 
+    # model = Model(cfg)
+    # if torch.cuda.is_available():
+    #     model = torch.nn.DataParallel(model).cuda()
+
+    # FFSC
+    # model load
+    pretrained_path = 'ckpt-best.pth'
+    pretrained_dict = torch.load(pretrained_path)
+
     model = Model(cfg)
+    # model pretrain
+    # model.load_state_dict(pretrained_dict, strict=False)
+    #  refine2 
+    refine2_dict = {k: v for k, v in pretrained_dict.items() if k.startswith('refine2.')}
+
+    # load refine2 
+    model.refine2.load_state_dict(refine2_dict, strict=False)
+
     if torch.cuda.is_available():
         model = torch.nn.DataParallel(model).cuda()
+    
+    # Watch the model
+    if not wandb.watch_called:
+        wandb.watch(model, log="all")
+        wandb.watch_called = True
 
     # Create the optimizers
     optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, model.parameters()),
@@ -129,6 +179,10 @@ def train_net(cfg):
                 train_writer.add_scalar('Loss/Batch/cd_pc', cd_pc_item, n_itr)
                 train_writer.add_scalar('Loss/Batch/cd_p1', cd_p1_item, n_itr)
                 train_writer.add_scalar('Loss/Batch/cd_p2', cd_p2_item, n_itr)
+
+                # Log to wandb
+                wandb.log({"cd_pc": cd_pc_item, "cd_p1": cd_p1_item, "cd_p2": cd_p2_item})
+
                 batch_time.update(time() - batch_end_time)
                 batch_end_time = time()
                 t.set_description('[Epoch %d/%d][Batch %d/%d]' % (epoch_idx, cfg.TRAIN.N_EPOCHS, batch_idx + 1, n_batches))
@@ -147,6 +201,10 @@ def train_net(cfg):
         train_writer.add_scalar('Loss/Epoch/cd_pc', avg_cdc, epoch_idx)
         train_writer.add_scalar('Loss/Epoch/cd_p1', avg_cd1, epoch_idx)
         train_writer.add_scalar('Loss/Epoch/cd_p2', avg_cd2, epoch_idx)
+
+        # Log epoch averages to wandb
+        wandb.log({"avg_cd_pc": avg_cdc, "avg_cd_p1": avg_cd1, "avg_cd_p2": avg_cd2})
+
         logging.info(
             '[Epoch %d/%d] EpochTime = %.3f (s) Losses = %s' %
             (epoch_idx, cfg.TRAIN.N_EPOCHS, epoch_end_time - epoch_start_time, ['%.4f' % l for l in [avg_cdc, avg_cd1, avg_cd2]]))
@@ -173,3 +231,4 @@ def train_net(cfg):
 
     train_writer.close()
     val_writer.close()
+    wandb.finish() 
