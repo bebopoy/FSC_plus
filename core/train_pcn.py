@@ -82,18 +82,18 @@ def train_net(cfg):
     #     model = torch.nn.DataParallel(model).cuda()
 
     # FFSC
-    # model load
-    pretrained_path = 'ckpt-best.pth'
-    pretrained_dict = torch.load(pretrained_path)
+    # # model load
+    # pretrained_path = 'ckpt-best.pth'
+    # pretrained_dict = torch.load(pretrained_path)
 
     model = Model(cfg)
     # model pretrain
     # model.load_state_dict(pretrained_dict, strict=False)
-    #  refine2 
-    refine2_dict = {k: v for k, v in pretrained_dict.items() if k.startswith('refine2.')}
+    # #  refine2 
+    # refine2_dict = {k: v for k, v in pretrained_dict.items() if k.startswith('refine2.')}
 
-    # load refine2 
-    model.refine2.load_state_dict(refine2_dict, strict=False)
+    # # load refine2 
+    # model.refine2.load_state_dict(refine2_dict, strict=False)
 
     if torch.cuda.is_available():
         model = torch.nn.DataParallel(model).cuda()
