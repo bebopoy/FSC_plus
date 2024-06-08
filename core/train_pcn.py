@@ -15,8 +15,8 @@ from utils.schedular import GradualWarmupScheduler
 from utils.loss_utils import *
 from models.model_utils import PCViews
 # from models.SVDFormer import Model
-# from models.FSCSVD import Model
-from models.FFSC import Model
+from models.FSCSVD import Model
+# from models.FFSC import Model
 import wandb # log print
 
 def setup_logging(log_file_path):
