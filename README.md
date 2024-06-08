@@ -14,7 +14,7 @@ Xianzu Wu, Xianfeng Wu, Tianyu Luan, Yajing Bai, Zhongyuan Lai, Junsong Yuan.
 > While previous studies have demonstrated successful 3D object shape completion with a sufficient number of points, they often fail in scenarios when a few points, e.g. tens of points, are observed. Surprisingly, via entropy analysis, we find that even a few points, e.g. 64 points, could retain substantial information to help recover the 3D shape of the object. To address the challenge of shape completion with very sparse point clouds, we then propose Few-point Shape Completion (FSC) mode, which contains a novel dual-branch feature extractor for handling extremely sparse inputs, coupled with an extensive branch for maximal point utilization with a saliency branch for dynamic importance assignment. This model is further bolstered by a two-stage revision network that refines both the extracted features and the decoder output, enhancing the detail and authenticity of the completed point cloud. Our experiments demonstrate the feasibility of recovering 3D shapes from a few points. The proposed Few-point Shape Completion (FSC) mode model outperforms previous methods on both few-point inputs and many-point inputs, and shows good generalizability to different object categories.
 
 ## Pretrained Models
-We provide pretrained SVDFormer models on PCN and ShapeNet-55/34 [here](https://drive.google.com/drive/folders/1qO1TAB-C2OOMKrUSoGUGY-nhThbBgQ5i?usp=drive_link).
+We provide pretrained FSC models(CVRR2024) on PCN and ShapeNet-55/34 [here](https://pan.baidu.com/s/1cOb827HaDLq0I-jHScakwg?pwd=iaw2) code = iaw2.
 
 
 ## Get Started
@@ -62,12 +62,12 @@ __C.DATASETS.SHAPENET55.CATEGORY_FILE_PATH       = '/path/to/datasets/ShapeNet34
 # Specify the checkpoint path in config_*.py
 __C.CONST.WEIGHTS = "path to your checkpoint"
 
-python main_*.py --test (pcn/55)
+python main_*.py --test (pcn/pcn_base)
 ```
 
 ### Training
 ```
-python main_*.py (pcn/55) 
+python main_*.py (pcn/pcn_base) 
 ```
 
 ## Citation
