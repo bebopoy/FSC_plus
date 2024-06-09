@@ -36,7 +36,7 @@ __C.CONST.N_INPUT_POINTS                         = 2048
 #
 
 __C.DIR                                          = edict()
-__C.DIR.OUT_PATH                                 = 'SVDFormer_PCN'
+__C.DIR.OUT_PATH                                 = 'FSC_PCN'
 __C.CONST.DEVICE                                 = '0,1'
 # __C.CONST.WEIGHTS                                = ''
 
