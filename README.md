@@ -65,6 +65,11 @@ __C.CONST.WEIGHTS = "path to your checkpoint"
 
 python main_*.py --test (pcn/pcn_base)
 ```
+### Evaluation(Currently offering test ShapeNet Seen/Unseen code)
+Test Unseen Need this dataset, Download the [PCN](https://drive.google.com/file/d/1OvvRyx02-C_DkzYiJ5stpin0mnXydHQ7/view?usp=sharing).
+```
+python main_pcn.py --test True --test_dataset_path /mnt/data/PCN(your own dataset path) --ckpt_path /mnt/data/checkpoint/FSC_best_PCN.pth(your model path) --novel True(True: Unsenn, Fasle: Seen)
+```
 
 ### Training
 ```
