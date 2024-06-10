@@ -58,13 +58,7 @@ __C.DATASETS.SHAPENET55.COMPLETE_POINTS_PATH     = '/path/to/shapenet_pc/%s'
 # Switch to ShapeNet-34 Seen/Unseen
 __C.DATASETS.SHAPENET55.CATEGORY_FILE_PATH       = '/path/to/datasets/ShapeNet34(ShapeNet-Unseen21)'
 ```
-### Evaluation
-```
-# Specify the checkpoint path in config_*.py
-__C.CONST.WEIGHTS = "path to your checkpoint"
 
-python main_*.py --test (pcn/pcn_base)
-```
 ### Evaluation(Currently offering test ShapeNet Seen/Unseen code)
 Test Unseen Need this dataset, Download the [PCN](https://drive.google.com/file/d/1OvvRyx02-C_DkzYiJ5stpin0mnXydHQ7/view?usp=sharing).
 ```
