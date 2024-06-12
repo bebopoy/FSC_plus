@@ -63,6 +63,10 @@ Test Unseen Need this dataset, Download the [PCN](https://drive.google.com/file/
 ```
 python main_pcn.py --test True --test_dataset_path /mnt/data/PCN(your own dataset path) --ckpt_path /mnt/data/checkpoint/FSC_best_PCN.pth(your model path) --novel True(True: Unsenn, Fasle: Seen)
 ```
+| CD-l1      | Airplane | Cabinet | Car    | Chair  | Lamp   | Sofa   | Table  | Vessel | Average |
+|-----------|----------|---------|--------|--------|--------|--------|--------|--------|---------|
+| FSC (Ours)     | 3.9850   | 9.3249  | 7.8244 | 7.4939 | 5.9197 | 9.0892 | 6.4548 | 6.0532 | 7.0181  |
+
 
 ### Training
 ```
