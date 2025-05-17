@@ -1,7 +1,7 @@
 # 操作手册详情
 
     用于 SHU 数据挖掘课程学习。
-                                                                ---by bebopoy 5/17
+                                                                                                                                ---by bebopoy 5/17
 
 ## Pretrained Models
 
@@ -84,23 +84,37 @@ datasets\PCN
 
 ---
 
-### Command for Train/Test
+### Command for Train
 
 ```
-# train :
 python main_pcn.py
+```
 
-# test :
+---
+
+### Command for Test
+
+```
 （models\FSCSVD.py中的内容，默认可以使用原论文FSC模型）
 测原论文的最优模型：(FSC)
 python main_pcn.py --test True --category all --test_dataset_path E:/projest_in_les/FSC/datasets/PCN --novel False --ckpt_path FSC_best_PCN.pth
 
 （models\FSCSVD.py中的内容，默认可以使用原论文FSC模型）
 测训练的模型：（FSC）
-python main_pcn.py --test True --category all --test_dataset_path E:/projest_in_les/FSC/datasets/PCN --novel False --ckpt_path FSC_PCN\checkpoints\2025-05-07_00-06-21\ckpt-best.pth
+python main_pcn.py --test True --category all --test_dataset_path E:/projest_in_les/FSC/datasets/PCN --novel False --ckpt_path FSC_PCN\checkpoints\2025-05-07_00-06-21\ckpt-best.pth(your FSC modelpath)
 
 （使用models\new_FSCSVD.py 去替换models\FSCSVD.py中的内容，才可以使用FSC++模型）
 测训练的模型：（FSC++）
-python main_pcn.py --test True --category all --test_dataset_path E:/projest_in_les/FSC/datasets/PCN --novel False --ckpt_path FSC_PCN\checkpoints\2025-05-07_00-06-21\ckpt-best.pth
+python main_pcn.py --test True --category all --test_dataset_path E:/projest_in_les/FSC/datasets/PCN --novel False --ckpt_path FSC_PCN\checkpoints\2025-05-07_00-06-21\ckpt-best.pth(your FSC++ modelpath)
 
 ```
+
+---
+
+### 相关链接
+
+- 仓库地址：https://github.com/bebopoy/FSC_plus.git
+- 仓库配置手册：https://github.com/bebopoy/FSC_plus/blob/main/GetStart.md
+- Raw FSC 训练日志（含可视化）：https://wandb.ai/xiangtongnie-shu/FSC/runs/y4yvxkwf
+- Imp FSC++训练日志（含可视化）：https://wandb.ai/xiangtongnie-shu/FSC/runs/uzcqpe3n
+- FSC 与 FSC++测试日志：https://drive.google.com/drive/folders/1yQ6TTl-7kdmh-Roj6_pF2GkB8M0fBR7u?usp=sharing
