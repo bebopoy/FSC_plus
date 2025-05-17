@@ -35,13 +35,14 @@ def train_net(cfg):
     wandb.watch_called = False  # Re-run the model without restarting the runtime, unnecessary after the first run
 
     # Set up folders for logs and checkpoints
-    output_dir = os.path.join(cfg.DIR.OUT_PATH, '%s', datetime.now().isoformat())
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")  # Windows-compatible timestamp
+    output_dir = os.path.join(cfg.DIR.OUT_PATH, '%s', timestamp)
     cfg.DIR.CHECKPOINTS = output_dir % 'checkpoints'
     cfg.DIR.LOGS = output_dir % 'logs'
     if not os.path.exists(cfg.DIR.CHECKPOINTS):
-        os.makedirs(cfg.DIR.CHECKPOINTS)
+        os.makedirs(cfg.DIR.CHECKPOINTS, exist_ok=True)
     if not os.path.exists(cfg.DIR.LOGS):
-        os.makedirs(cfg.DIR.LOGS)
+        os.makedirs(cfg.DIR.LOGS, exist_ok=True)
 
     log_file_path = os.path.join(cfg.DIR.LOGS, 'training.log')
     setup_logging(log_file_path)
@@ -63,41 +64,15 @@ def train_net(cfg):
                                                   collate_fn=utils.data_loaders.collate_fn,
                                                   pin_memory=True,
                                                   shuffle=False)
-    
-
-
-    # # Set up folders for logs and checkpoints
-    # output_dir = os.path.join(cfg.DIR.OUT_PATH, '%s', datetime.now().isoformat())
-    # cfg.DIR.CHECKPOINTS = output_dir % 'checkpoints'
-    # cfg.DIR.LOGS = output_dir % 'logs'
-    # if not os.path.exists(cfg.DIR.CHECKPOINTS):
-    #     os.makedirs(cfg.DIR.CHECKPOINTS)
 
     # Create tensorboard writers
     train_writer = SummaryWriter(os.path.join(cfg.DIR.LOGS, 'train'))
     val_writer = SummaryWriter(os.path.join(cfg.DIR.LOGS, 'test'))
 
-    # model = Model(cfg)
-    # if torch.cuda.is_available():
-    #     model = torch.nn.DataParallel(model).cuda()
-
-    # FFSC
-    # # model load
-    # pretrained_path = 'ckpt-best.pth'
-    # pretrained_dict = torch.load(pretrained_path)
-
     model = Model(cfg)
-    # model pretrain
-    # model.load_state_dict(pretrained_dict, strict=False)
-    # #  refine2 
-    # refine2_dict = {k: v for k, v in pretrained_dict.items() if k.startswith('refine2.')}
-
-    # # load refine2 
-    # model.refine2.load_state_dict(refine2_dict, strict=False)
-
     if torch.cuda.is_available():
         model = torch.nn.DataParallel(model).cuda()
-    
+
     # Watch the model
     if not wandb.watch_called:
         wandb.watch(model, log="all")
@@ -118,8 +93,6 @@ def train_net(cfg):
     best_metrics = float('inf')
     steps = 0
     BestEpoch = 0
-    # # SVDformer
-    # render = PCViews(TRANS=-cfg.NETWORK.view_distance, RESOLUTION=224)
 
     if 'WEIGHTS' in cfg.CONST:
         logging.info('Recovering from %s ...' % (cfg.CONST.WEIGHTS))
@@ -156,11 +129,6 @@ def train_net(cfg):
                 partial = data['partial_cloud']
                 gt = data['gtcloud']
 
-                # # SVDformer
-                # partial_depth = torch.unsqueeze(render.get_img(partial), 1)
-                # pcds_pred = model(partial, partial_depth)
-                
-                # FSC
                 pcds_pred = model(partial)
 
                 loss_total, losses = get_loss(pcds_pred,  gt, sqrt=True)
@@ -231,4 +199,4 @@ def train_net(cfg):
 
     train_writer.close()
     val_writer.close()
-    wandb.finish() 
+    wandb.finish()

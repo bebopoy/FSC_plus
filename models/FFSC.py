@@ -15,7 +15,7 @@ sys.path.append(os.path.join(os.path.dirname("__file__"), '..', '..'))
 from models.model_utils import cross_attention, furthest_point_sample
 from pointnet2_ops.pointnet2_utils import gather_operation as gather_points
 from models.SVDFormer import SDG, local_encoder
- 
+
 
 class Extensive_Branch_Layer(nn.Module):
     def __init__(self, latent_dim=1024):
@@ -51,14 +51,16 @@ class Extensive_Branch_Layer(nn.Module):
 
         feature = self.first_conv(xyz.transpose(2, 1))  # (B,  256, N)
         # low_feature_global = torch.max(feature, dim=2, keepdim=True)[0]  # (B,  256, 1)
-        low_feature_global = F.adaptive_max_pool1d(feature, 1)
+        low_feature_global = F.adaptive_max_pool1d(feature, 1)  # (B,  256, 1)
         feature = torch.cat([low_feature_global.expand(-1, -1, N), feature], dim=1)  # (B,  512, N)
+
         feature = self.second_conv(feature)  # (B, 1024, N)
         feature_global = torch.max(feature, dim=2, keepdim=False)[0]  # (B, 1024)
         feature_global = F.adaptive_max_pool1d(feature, 1)
+
         feature_global = torch.squeeze(feature_global, dim=2)
         multi_level_extensive_feature = torch.cat([torch.squeeze(low_feature_global, dim=2), feature_global], dim=1)
-        return multi_level_extensive_feature
+        return multi_level_extensive_feature #[B, 256 + latent_dim]
 
 
 class offset_attention(nn.Module):
@@ -82,6 +84,7 @@ class offset_attention(nn.Module):
         attention = self.softmax(energy)
         attention = attention / (1e-9 + attention.sum(dim=1, keepdims=True))
         x_r = torch.bmm(x_v, attention)  # b, c, n
+
         x_r = self.act(self.after_norm(self.trans_conv(x - x_r)))
         x = x + x_r
         return x
@@ -187,7 +190,7 @@ class AutoEncoder(nn.Module):
         super(AutoEncoder, self).__init__()
         self.channel = channel
         self.num_coarse = num_coarse
-        self.Extensive_Encoder = Extensive_Branch_Layer() 
+        self.Extensive_Encoder = Extensive_Branch_Layer()
         self.Salience_Encoder1 = Salience_Branch_Layer()
         self.cross_attn = cross_attention(d_model=1024+256, d_model_out=1024)
         # self.fc = nn.Linear(self.multi_global_size, self.multi_global_size, bias=True)
@@ -203,7 +206,8 @@ class AutoEncoder(nn.Module):
         B, N, _ = x.shape
         extensive_feature = self.Extensive_Encoder(x)
         salience_feature = self.Salience_Encoder1(x)
-        adaptive_feature = self.cross_attn(torch.unsqueeze(extensive_feature, dim=2), 
+
+        adaptive_feature = self.cross_attn(torch.unsqueeze(extensive_feature, dim=2),
                                            torch.unsqueeze(salience_feature, dim=2))
         x = F.gelu(self.ps(adaptive_feature))
         x = F.gelu(self.ps_refuse(torch.cat([x, adaptive_feature.repeat(1, 1, x.size(2))], 1)))

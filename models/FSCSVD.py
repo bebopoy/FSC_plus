@@ -15,7 +15,7 @@ sys.path.append(os.path.join(os.path.dirname("__file__"), '..', '..'))
 from models.model_utils import cross_attention, furthest_point_sample
 from pointnet2_ops.pointnet2_utils import gather_operation as gather_points
 from models.SVDFormer import SDG, local_encoder
- 
+
 
 class Extensive_Branch_Layer(nn.Module):
     def __init__(self, latent_dim=1024):
@@ -203,7 +203,7 @@ class AutoEncoder(nn.Module):
         B, N, _ = x.shape
         extensive_feature = self.Extensive_Encoder(x)
         salience_feature = self.Salience_Encoder1(x)
-        adaptive_feature = self.cross_attn(torch.unsqueeze(extensive_feature, dim=2), 
+        adaptive_feature = self.cross_attn(torch.unsqueeze(extensive_feature, dim=2),
                                            torch.unsqueeze(salience_feature, dim=2))
         x = F.gelu(self.ps(adaptive_feature))
         x = F.gelu(self.ps_refuse(torch.cat([x, adaptive_feature.repeat(1, 1, x.size(2))], 1)))

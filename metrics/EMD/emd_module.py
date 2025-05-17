@@ -1,11 +1,11 @@
 # EMD approximation module (based on auction algorithm)
 # memory complexity: O(n)
-# time complexity: O(n^2 * iter) 
+# time complexity: O(n^2 * iter)
 # author: Minghua Liu
 
 # Input:
 # xyz1, xyz2: [#batch, #points, 3]
-# where xyz1 is the predicted point cloud and xyz2 is the ground truth point cloud 
+# where xyz1 is the predicted point cloud and xyz2 is the ground truth point cloud
 # two point clouds should have same size and be normalized to [0, 1]
 # #points should be a multiple of 1024
 # #batch should be no greater than 512
@@ -14,7 +14,7 @@
 # we only calculate gradient for xyz1
 
 # Output:
-# dist: [#batch, #points],  sqrt(dist) -> L2 distance 
+# dist: [#batch, #points],  sqrt(dist) -> L2 distance
 # assignment: [#batch, #points], index of the matched point in the ground truth point cloud
 # the result is an approximation and the assignment is not guranteed to be a bijection
 
@@ -29,12 +29,27 @@ import os
 # import emd
 
 from torch.utils.cpp_extension import load
-emd = load(name="emd",
-        sources=[
-            "/".join(os.path.abspath(__file__).split('/')[:-1] + ["emd.cpp"]),
-            "/".join(os.path.abspath(__file__).split('/')[:-1] + ["emd_cuda.cu"]),
-            ])
-print("Loaded JIT 3D CUDA emd")
+# emd = load(name="emd",
+#         sources=[
+#             "/".join(os.path.abspath(__file__).split('/')[:-1] + ["emd.cpp"]),
+#             "/".join(os.path.abspath(__file__).split('/')[:-1] + ["emd_cuda.cu"]),
+#             ])
+# print("Loaded JIT 3D CUDA emd")
+
+import os.path as osp
+
+# Define the path to source files relative to project root
+source_dir = osp.join("metrics", "EMD")
+emd = load(
+    name="emd",
+    sources=[
+        osp.join(source_dir, "emd.cpp"),
+        osp.join(source_dir, "emd_cuda.cu")
+    ],
+    extra_cflags=["-O3"],
+    extra_cuda_cflags=["-O3"],
+    verbose=True
+)
 
 
 class emdFunction(Function):
@@ -104,5 +119,5 @@ def test_emd():
     print("Verified EMD: %lf" % np.sqrt(d.cpu().sum(-1)).mean())
 
 # test_emd()
-    
-       
+
+

@@ -16,7 +16,7 @@ class ShapeNet(data.Dataset):
     samples while each complete samples corresponds to 8 viewpoint partial scans, 800
     validation samples and 1200 testing samples.
     """
-    
+
     def __init__(self, dataroot, split, category):
         assert split in ['train', 'valid', 'test', 'test_novel'], "split error value!"
 
@@ -30,7 +30,7 @@ class ShapeNet(data.Dataset):
             "sofa"      : "04256520",
             "table"     : "04379243",
             "vessel"    : "04530566",  # boat
-            
+
             # alis for some seen categories
             "boat"      : "04530566",  # vessel
             "couch"     : "04256520",  # sofa
@@ -56,7 +56,7 @@ class ShapeNet(data.Dataset):
         self.category = category
 
         self.partial_paths, self.complete_paths = self._load_data()
-    
+
     def __getitem__(self, index):
         if self.split == 'train':
             partial_path = self.partial_paths[index].format(random.randint(0, 7))
@@ -78,7 +78,7 @@ class ShapeNet(data.Dataset):
 
         if self.category != 'all':
             lines = list(filter(lambda x: x.startswith(self.cat2id[self.category]), lines))
-        
+
         partial_paths, complete_paths = list(), list()
 
         for line in lines:
@@ -88,13 +88,13 @@ class ShapeNet(data.Dataset):
             else:
                 partial_paths.append(os.path.join(self.dataroot, self.split, 'partial', category, model_id + '.ply'))
             complete_paths.append(os.path.join(self.dataroot, self.split, 'complete', category, model_id + '.ply'))
-        
+
         return partial_paths, complete_paths
-    
+
     def read_point_cloud(self, path):
         pc = o3d.io.read_point_cloud(path)
         return np.array(pc.points, np.float32)
-    
+
     def random_sample(self, pc, n):
         idx = np.random.permutation(pc.shape[0])
         if idx.shape[0] < n:

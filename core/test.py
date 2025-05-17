@@ -59,7 +59,7 @@ def test_single_category(category, model, params):
             total_l2_cd += cdl2.mean().item()
             for i in range(len(c)):
                 total_f_score += f1.mean().item()
-    
+
     avg_l1_cd = total_l1_cd / len(test_dataset)
     avg_l2_cd = total_l2_cd / len(test_dataset)
     avg_f_score = total_f_score / len(test_dataset)
@@ -76,7 +76,8 @@ def test(params):
     if torch.cuda.is_available():
         model = torch.nn.DataParallel(model).cuda()
 
-    model.load_state_dict(torch.load(params.ckpt_path)['model'])
+    # model.load_state_dict(torch.load(params.ckpt_path)['model'])
+    model.load_state_dict(torch.load(params.ckpt_path, weights_only=True)['model'])
     model.eval()
 
     print('\033[33m{:20s}{:20s}{:20s}{:20s}\033[0m'.format('Category', 'L1_CD(1e-3)', 'L2_CD(1e-4)', 'FScore-0.01(%)'))
@@ -87,7 +88,7 @@ def test(params):
             categories = CATEGORIES_PCN_NOVEL
         else:
             categories = CATEGORIES_PCN
-        
+
         l1_cds, l2_cds, fscores = list(), list(), list()
         for category in categories:
             avg_l1_cd, avg_l2_cd, avg_f_score = test_single_category(category, model, params)
@@ -95,7 +96,7 @@ def test(params):
             l1_cds.append(avg_l1_cd)
             l2_cds.append(avg_l2_cd)
             fscores.append(avg_f_score)
-        
+
         print('\033[33m{:20s}{:20s}{:20s}{:20s}\033[0m'.format('--------', '-----------', '-----------', '--------------'))
         print('\033[32m{:20s}{:<20.4f}{:<20.4f}{:<20.4f}\033[0m'.format('Average', np.mean(l1_cds) * 1e3, np.mean(l2_cds) * 1e4, np.mean(fscores) * 1e2))
     else:
