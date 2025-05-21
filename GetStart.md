@@ -94,18 +94,25 @@ python main_pcn.py
 
 ### Command for Test
 
+--test True
+--exp_name BEST 记录各个类别第一个输入、输出结果、以及真实点云信息，用于可视化
+--ckpt_path FSC_best_PCN.pth 用于选择模型
+--test_dataset_path E:/projest_in_les/FSC/datasets/PCN 选测试集
+--category all 选择测试的补全类行
+--novel False
+
 ```
 （models\FSCSVD.py中的内容，默认可以使用原论文FSC模型）
 测原论文的最优模型：(FSC)
-python main_pcn.py --test True --category all --test_dataset_path E:/projest_in_les/FSC/datasets/PCN --novel False --ckpt_path FSC_best_PCN.pth
+python main_pcn.py --test True --category all --test_dataset_path E:/projest_in_les/FSC/datasets/PCN --novel False --ckpt_path FSC_best_PCN.pth --exp_name BEST
 
 （models\FSCSVD.py中的内容，默认可以使用原论文FSC模型）
 测训练的模型：（FSC）
-python main_pcn.py --test True --category all --test_dataset_path E:/projest_in_les/FSC/datasets/PCN --novel False --ckpt_path FSC_PCN\checkpoints\2025-05-07_00-06-21\ckpt-best.pth(your FSC modelpath)
+python main_pcn.py --test True --category all --test_dataset_path E:/projest_in_les/FSC/datasets/PCN --novel False --ckpt_path FSC_PCN\checkpoints\2025-05-07_00-06-21\ckpt-best.pth(your FSC modelpath) --exp_name RAW
 
 （使用models\new_FSCSVD.py 去替换models\FSCSVD.py中的内容，才可以使用FSC++模型）
 测训练的模型：（FSC++）
-python main_pcn.py --test True --category all --test_dataset_path E:/projest_in_les/FSC/datasets/PCN --novel False --ckpt_path FSC_PCN\checkpoints\2025-05-07_00-06-21\ckpt-best.pth(your FSC++ modelpath)
+python main_pcn.py --test True --category all --test_dataset_path E:/projest_in_les/FSC/datasets/PCN --novel False --ckpt_path FSC_PCN\checkpoints\2025-05-07_00-06-21\ckpt-best.pth(your FSC++ modelpath) --exp_name IMP
 
 ```
 
