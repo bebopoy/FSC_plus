@@ -95,10 +95,15 @@ python main_pcn.py
 ### Command for Test
 
 --test True
+
 --exp_name BEST 记录各个类别第一个输入、输出结果、以及真实点云信息，用于可视化
+
 --ckpt_path FSC_best_PCN.pth 用于选择模型
+
 --test_dataset_path E:/projest_in_les/FSC/datasets/PCN 选测试集
+
 --category all 选择测试的补全类行
+
 --novel False
 
 ```
