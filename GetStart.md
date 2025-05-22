@@ -129,4 +129,5 @@ python main_pcn.py --test True --category all --test_dataset_path E:/projest_in_
 - 仓库配置手册：https://github.com/bebopoy/FSC_plus/blob/main/GetStart.md
 - Raw FSC 训练日志（含可视化）：https://wandb.ai/xiangtongnie-shu/FSC/runs/y4yvxkwf
 - Imp FSC++训练日志（含可视化）：https://wandb.ai/xiangtongnie-shu/FSC/runs/uzcqpe3n
-- FSC 与 FSC++测试日志：https://drive.google.com/drive/folders/1yQ6TTl-7kdmh-Roj6_pF2GkB8M0fBR7u?usp=sharing
+- FSC 与 FSC++测试日志：https://drive.google.com/drive/folders/1yQ6TTl-7kdmh-Roj6_pF2GkB8M0fBR7u
+
